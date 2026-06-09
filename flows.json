@@ -1,0 +1,223 @@
+[
+    {
+        "id": "f2161a685b94e262",
+        "type": "tab",
+        "label": "NEO Monitor",
+        "disabled": false,
+        "info": "FIAP Global Solution 2026 - NASA NeoWs + ESP32"
+    },
+    {
+        "id": "50fedc84bb5a8db1",
+        "type": "inject",
+        "z": "f2161a685b94e262",
+        "name": "Buscar NASA",
+        "props": [],
+        "repeat": "300",
+        "once": true,
+        "onceDelay": "1",
+        "x": 340,
+        "y": 280,
+        "wires": [
+            [
+                "31849f6498d4c97e"
+            ]
+        ]
+    },
+    {
+        "id": "31849f6498d4c97e",
+        "type": "http request",
+        "z": "f2161a685b94e262",
+        "name": "NASA API",
+        "method": "GET",
+        "ret": "obj",
+        "url": "https://api.nasa.gov/neo/rest/v1/feed?start_date=2026-06-05&end_date=2026-06-05&api_key=xIsuXmxKGriGkMurcE7gHcXNuSmgpL6j3fNIUhGI",
+        "x": 550,
+        "y": 280,
+        "wires": [
+            [
+                "4d3f87d56894557b"
+            ]
+        ]
+    },
+    {
+        "id": "4d3f87d56894557b",
+        "type": "function",
+        "z": "f2161a685b94e262",
+        "name": "Processa Dados",
+        "func": "let neoData = msg.payload.near_earth_objects;\n\nif (!neoData) {\n    return null;\n}\n\nlet dates = Object.keys(neoData);\nlet neo = neoData[dates[0]][0];\n\nlet distance = parseFloat(neo.close_approach_data[0].miss_distance.kilometers);\n\nlet risk = \"SAFE\";\n\nif(distance < 5000000){\n   risk = \"DANGER\";\n}\n\nmsg.payload = {\n    asteroid: neo.name,\n    distance: distance,\n    risk: risk\n};\n\nreturn msg;",
+        "outputs": 1,
+        "x": 780,
+        "y": 280,
+        "wires": [
+            [
+                "b1a84c4662731867",
+                "5d4b77ceee79ed41",
+                "586b8006ad98195b",
+                "f54c7cd8f33685ec"
+            ]
+        ]
+    },
+    {
+        "id": "5d4b77ceee79ed41",
+        "type": "function",
+        "z": "f2161a685b94e262",
+        "name": "Gauge Distancia",
+        "func": "msg.payload = msg.payload.distance;\nreturn msg;",
+        "outputs": 1,
+        "x": 1060,
+        "y": 360,
+        "wires": [
+            [
+                "f635b350942221b7"
+            ]
+        ]
+    },
+    {
+        "id": "586b8006ad98195b",
+        "type": "function",
+        "z": "f2161a685b94e262",
+        "name": "Chart Distancia",
+        "func": "msg.payload = msg.payload.distance;\nreturn msg;",
+        "outputs": 1,
+        "x": 1060,
+        "y": 460,
+        "wires": [
+            [
+                "968541b6616cfcdd"
+            ]
+        ]
+    },
+    {
+        "id": "b1a84c4662731867",
+        "type": "ui_text",
+        "z": "f2161a685b94e262",
+        "group": "a071b1d0d6e153ca",
+        "order": 1,
+        "width": "6",
+        "height": "2",
+        "name": "",
+        "label": "☄️ Asteroide Atual",
+        "format": "{{msg.payload.asteroid}}",
+        "layout": "col-center",
+        "className": "",
+        "x": 1070,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "f635b350942221b7",
+        "type": "ui_gauge",
+        "z": "f2161a685b94e262",
+        "name": "",
+        "group": "76ab864b45445542",
+        "order": 1,
+        "width": "6",
+        "height": "4",
+        "gtype": "gage",
+        "title": "📏 Distância da Terra",
+        "label": "km",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "50000000",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "10000000",
+        "seg2": "25000000",
+        "x": 1320,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "968541b6616cfcdd",
+        "type": "ui_chart",
+        "z": "f2161a685b94e262",
+        "name": "",
+        "group": "2476fe9e5d6a5be5",
+        "order": 1,
+        "width": "12",
+        "height": "6",
+        "label": "📈 Histórico de Aproximação",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "basis",
+        "nodata": "Aguardando dados...",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "1",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": true,
+        "colors": [
+            "#00aaff"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1330,
+        "y": 460,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f54c7cd8f33685ec",
+        "type": "debug",
+        "z": "f2161a685b94e262",
+        "name": "NASA",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "complete": "payload",
+        "x": 1060,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "a071b1d0d6e153ca",
+        "type": "ui_group",
+        "name": "Asteroide Atual",
+        "tab": "tab1",
+        "order": 1,
+        "disp": true,
+        "width": "6"
+    },
+    {
+        "id": "76ab864b45445542",
+        "type": "ui_group",
+        "name": "Monitoramento",
+        "tab": "tab1",
+        "order": 2,
+        "disp": true,
+        "width": "6"
+    },
+    {
+        "id": "2476fe9e5d6a5be5",
+        "type": "ui_group",
+        "name": "Histórico",
+        "tab": "tab1",
+        "order": 3,
+        "disp": true,
+        "width": "12"
+    },
+    {
+        "id": "tab1",
+        "type": "ui_tab",
+        "name": "NEO Dashboard",
+        "icon": "dashboard",
+        "order": 1
+    },
+    {
+        "id": "73b76adb91549c48",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-dashboard": "3.6.6"
+        }
+    }
+]
