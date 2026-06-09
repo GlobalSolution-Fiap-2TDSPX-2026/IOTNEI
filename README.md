@@ -19,10 +19,12 @@ O sistema monitora asteroides próximos da Terra em tempo real, exibindo informa
 
 # Integrantes
 
-- Nathan Gabriel Pires Machado — RM: XXXXX
-- Integrante 2 — RM: XXXXX
-- Integrante 3 — RM: XXXXX
-
+| Nome | RM |
+|------|-----|
+|Nathan Gonçalves Pereira Mendes | RM564666 |
+|Guilherme Santos Fonseca | RM564232 |
+|Gustavo Araujo Da Silva | RM566526 |
+|Anthony De Souza Henriques | RM566188 |
 ---
 
 # Tecnologias Utilizadas
